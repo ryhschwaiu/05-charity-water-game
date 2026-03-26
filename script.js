@@ -550,14 +550,17 @@ function updateActionPopupElement(playerX, playerY, playerSize) {
     actionPopupEl.style.maxWidth = `${Math.max(120, canvasWidth - edgePadding * 2)}px`;
 
     if (scaledPlayerCenterX <= edgeThreshold) {
+        actionPopupEl.style.right = 'auto';
         actionPopupEl.style.left = `${edgePadding}px`;
         actionPopupEl.style.transform = 'translate(0, -100%)';
         actionPopupEl.style.textAlign = 'left';
     } else if (scaledPlayerCenterX >= canvasWidth - edgeThreshold) {
-        actionPopupEl.style.left = `${canvasWidth - edgePadding}px`;
-        actionPopupEl.style.transform = 'translate(-100%, -100%)';
+        actionPopupEl.style.left = 'auto';
+        actionPopupEl.style.right = `${edgePadding}px`;
+        actionPopupEl.style.transform = 'translate(0, -100%)';
         actionPopupEl.style.textAlign = 'right';
     } else {
+        actionPopupEl.style.right = 'auto';
         actionPopupEl.style.left = `${scaledPlayerCenterX}px`;
         actionPopupEl.style.transform = 'translate(-50%, -100%)';
         actionPopupEl.style.textAlign = 'center';
@@ -958,16 +961,24 @@ function scrollWorldUpOneTile() {
     }
 }
 
-function applyPlayerTriggeredScroll() {
+function applyPlayerTriggeredScroll(previousRow) {
     const visibleRows = getVisibleRowCount();
     const scrollTriggerRowOffset = Math.max(1, visibleRows - 2);
     const downTriggerRow = worldTopRow + scrollTriggerRowOffset;
     const upTriggerRow = worldTopRow + 1;
 
+    // Sideways movement should not scroll the camera.
+    if (player.row === previousRow) {
+        return;
+    }
+
+    const movedDown = player.row > previousRow;
+    const movedUp = player.row < previousRow;
+
     // Scroll down when player reaches lower trigger.
-    if (player.row >= downTriggerRow) {
+    if (movedDown && player.row >= downTriggerRow) {
         scrollWorldDownOneTile();
-    } else if (player.row <= upTriggerRow) {
+    } else if (movedUp && player.row <= upTriggerRow) {
         scrollWorldUpOneTile();
     }
 }
@@ -1066,7 +1077,7 @@ function applyMoveResult(previousRow, previousCol) {
         updateScoreDisplay();
     }
 
-    applyPlayerTriggeredScroll();
+    applyPlayerTriggeredScroll(previousRow);
 
     if (currentTile && currentTile.hazard === 'hatch' && currentTile.state === 'closed' && !currentTile.openSide) {
         currentTile.openSide = getSideFromTo(previousRow, previousCol, player.row, player.col);
