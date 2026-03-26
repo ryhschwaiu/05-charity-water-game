@@ -8,58 +8,104 @@
 </head>
 <body>
     <main class="game-page">
-        <header class="top-bar">
-            <h1>FreeFlow</h1>
-            <div class="score-board">
-                <span>Liters Delivered: <strong id="scoreValue">0</strong></span>
-                <span>High Score: <strong id="highScoreValue">0</strong></span>
-                <span>Jerry Cans: <strong id="jerryCansValue">0</strong></span>
-                <button id="pauseButton" type="button" class="pause-button">Pause</button>
-            </div>
-        </header>
-
-        <section class="game-frame">
-            <canvas id="gameCanvas" width="360" height="720" aria-label="FreeFlow game area"></canvas>
-
-            <div id="startOverlay" class="overlay show">
-                <div class="overlay-card">
-                    <h2>FreeFlow</h2>
-                    <p>Use arrow keys to move and Space to interact.</p>
-                    <ul>
-                        <li>Stay ahead of the flowing water.</li>
-                        <li>Clear contaminants, open hatches, avoid pests.</li>
-                        <li>Collect Jerry cans for bonus score!</li>
-                        <li>Deliver as much water as you can!</li>
-                    </ul>
-                    <button id="startButton" type="button">Start</button>
+        <div class="page-layout">
+            <header class="top-bar">
+                <div class="brand-banner" aria-label="FreeFlow and charity water branding">
+                    <img src="img/cw_logo_horizontal.png" alt="charity: water" class="brand-logo">
+                    <h1>FreeFlow</h1>
                 </div>
-            </div>
+                <div class="score-board">
+                    <span>Liters Delivered: <strong id="scoreValue">0</strong></span>
+                    <span>High Score: <strong id="highScoreValue">0</strong></span>
+                    <span>Jerry Cans: <strong id="jerryCansValue">0</strong></span>
+                    <button id="pauseButton" type="button" class="pause-button">Pause</button>
+                </div>
+            </header>
 
-            <div id="gameOverOverlay" class="overlay">
-                <div class="overlay-card">
-                    <h2>Game Over</h2>
-                    <p id="gameOverMessage">You got caught by the flowing water!</p>
-                    <p>Liters Delivered: <strong id="finalScoreValue">0</strong></p>
-                    <div class="overlay-actions">
-                        <button id="restartButton" type="button">Restart</button>
-                        <button id="mainMenuButton" type="button">Main Menu</button>
+            <section class="game-row">
+                <aside class="left-panel" aria-label="How to play and controls">
+                    <section class="info-card controls-card">
+                        <h2>Controls</h2>
+                        <p class="control-label">Move</p>
+                        <div class="key-grid" aria-label="Arrow key controls">
+                            <span class="key key-up" aria-hidden="true">&uarr;</span>
+                            <span class="key key-left" aria-hidden="true">&larr;</span>
+                            <span class="key key-down" aria-hidden="true">&darr;</span>
+                            <span class="key key-right" aria-hidden="true">&rarr;</span>
+                        </div>
+                        <p class="control-label">Interact</p>
+                        <div class="space-row" aria-label="Space bar control">
+                            <span class="key key-space">Space</span>
+                        </div>
+                    </section>
+
+                    <section class="info-card how-to-play-card">
+                        <h2>How to Play</h2>
+                        <ul>
+                            <li>Stay ahead of the flowing water.</li>
+                            <li>Clear contaminants, open hatches, and avoid pests.</li>
+                            <li>Collect Jerry cans for bonus score.</li>
+                            <li>Deliver as much water as you can.</li>
+                        </ul>
+                    </section>
+                </aside>
+
+                <section class="game-frame">
+                    <canvas id="gameCanvas" width="360" height="480" aria-label="FreeFlow game area"></canvas>
+
+                    <div id="startOverlay" class="overlay show">
+                        <div class="overlay-card">
+                            <h2>FreeFlow</h2>
+                            <p>Navigate the pipeline, avoid and clear hazards, and deliver as much water as you can!</p>
+                            <button id="startButton" type="button">Start</button>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <div id="pauseOverlay" class="overlay">
-                <div class="overlay-card">
-                    <h2>Paused</h2>
-                    <p>Game paused.</p>
-                    <div class="overlay-actions">
-                        <button id="continueButton" type="button">Continue</button>
-                        <button id="pauseRestartButton" type="button">Restart</button>
-                        <button id="quitButton" type="button">Quit</button>
+                    <div id="gameOverOverlay" class="overlay">
+                        <div class="overlay-card">
+                            <h2>Game Over</h2>
+                            <p id="gameOverMessage">You got caught by the flowing water!</p>
+                            <p>Liters Delivered: <strong id="finalScoreValue">0</strong></p>
+                            <div class="overlay-actions">
+                                <button id="restartButton" type="button">Restart</button>
+                                <button id="mainMenuButton" type="button">Main Menu</button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </section>
+
+                    <div id="pauseOverlay" class="overlay">
+                        <div class="overlay-card">
+                            <h2>Paused</h2>
+                            <p>Game paused.</p>
+                            <div class="overlay-actions">
+                                <button id="continueButton" type="button">Continue</button>
+                                <button id="pauseRestartButton" type="button">Restart</button>
+                                <button id="quitButton" type="button">Quit</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <aside class="right-panel" aria-label="Charity information">
+                    <section class="info-card charity-card">
+                        <h2>Charity Info</h2>
+                        <p>
+                            This game is inspired by the global clean water mission of charity: water.
+                            Every point represents water delivered where it is needed most.
+                        </p>
+                    </section>
+                </aside>
+            </section>
+        </div>
     </main>
+
+    <footer class="charity-footer" aria-label="Charity water links">
+        <p>Support the mission for clean water worldwide:</p>
+        <nav class="charity-footer-links" aria-label="External charity water links">
+            <a href="https://www.charitywater.org/" target="_blank" rel="noopener noreferrer">Visit charity: water</a>
+            <a href="https://www.charitywater.org/donate" target="_blank" rel="noopener noreferrer">Donate now</a>
+        </nav>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"></script>
     <script src="script.js"></script>

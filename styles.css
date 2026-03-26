@@ -14,6 +14,22 @@ Secondary Colors:
 
 */
 
+@font-face {
+	font-family: "Proxima Nova";
+	src: local("Proxima Nova Regular"), local("ProximaNova-Regular"), local("Proxima Nova");
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: "Proxima Nova";
+	src: local("Proxima Nova Bold"), local("ProximaNova-Bold"), local("Proxima Nova");
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+}
+
 :root {
 	--cw-yellow: #FFC907;
 	--cw-blue: #2E9DF7;
@@ -23,66 +39,281 @@ Secondary Colors:
 	--cw-red: #F5402C;
 	--cw-dark-green: #159A48;
 	--cw-pink: #F16061;
+	--theme-page-text: #159A48;
+	--theme-bg-a: #8BD1CB;
+	--theme-bg-b: #2E9DF7;
+	--theme-panel-bg: #ffffff;
+	--theme-panel-border: #8BD1CB;
+	--theme-heading: #2E9DF7;
+	--theme-accent: #FFC907;
+	--theme-button: #2E9DF7;
+	--theme-button-hover: #0B5AC7;
+	--theme-key-text: #0b5ac7;
+	--theme-key-shadow: rgba(11, 90, 199, 0.18);
+	--theme-canvas-border: #2E9DF7;
+	--theme-overlay: rgba(11, 90, 199, 0.45);
+	--theme-footer-bg: linear-gradient(90deg, #fff7d1 0%, #e9f6ff 100%);
+	--theme-footer-text: #0b5ac7;
+	--theme-footer-link: #2E9DF7;
+	--theme-footer-link-hover: #0B5AC7;
+	--hard-canvas-width: 360px;
+	--hard-canvas-height: 480px;
 }
 
 * {
 	box-sizing: border-box;
 }
 
+html,
+body {
+	height: 100%;
+	overflow: hidden;
+}
+
 body {
 	margin: 0;
-	font-family: Arial, sans-serif;
-	background: white;
-	color: var(--cw-dark-green);
+	font-family: "Proxima Nova", "Avenir Next", "Segoe UI", sans-serif;
+	display: flex;
+	flex-direction: column;
+	background:
+		radial-gradient(circle at 10% 10%, var(--theme-bg-a), transparent 40%),
+		radial-gradient(circle at 90% 20%, var(--theme-bg-b), transparent 42%),
+		white;
+	color: var(--theme-page-text);
 }
 
 .game-page {
-	min-height: 100vh;
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	align-items: center;
+	padding: 8px 12px;
+}
+
+.charity-footer {
+	margin: 0 auto 8px;
+	width: min(1240px, calc(100% - 32px));
+	background: var(--theme-footer-bg);
+	border: 2px solid var(--theme-accent);
+	border-radius: 12px;
+	padding: 8px 12px;
+	box-shadow: 0 6px 14px rgba(14, 107, 168, 0.12);
+	text-align: center;
+}
+
+.charity-footer p {
+	margin: 0 0 6px;
+	font-weight: 700;
+	color: var(--theme-footer-text);
+}
+
+.charity-footer-links {
+	display: flex;
+	justify-content: center;
+	gap: 14px;
+	flex-wrap: wrap;
+}
+
+.charity-footer-links a {
+	display: inline-block;
+	padding: 8px 12px;
+	border-radius: 8px;
+	background: var(--theme-footer-link);
+	color: white;
+	font-weight: 700;
+	text-decoration: none;
+	transition: background 0.2s ease;
+	font-size: 0.92rem;
+}
+
+.charity-footer-links a:hover,
+.charity-footer-links a:focus-visible {
+	background: var(--theme-footer-link-hover);
+}
+
+.page-layout {
+	width: 100%;
+	max-width: 1240px;
+	height: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding: 16px;
+	justify-content: center;
+	gap: 8px;
+}
+
+.brand-banner {
+	width: 100vw;
+	max-width: none;
+	margin-left: calc(50% - 50vw);
+	margin-right: calc(50% - 50vw);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	padding: 8px 10px;
+	background: rgba(255, 255, 255, 0.86);
+	border: 2px solid var(--theme-accent);
+	border-radius: 0;
+}
+
+.brand-logo {
+	height: 34px;
+	width: auto;
+	max-width: 52%;
+	object-fit: contain;
+}
+
+.game-row {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+}
+
+.left-panel,
+.right-panel {
+	display: grid;
+	gap: 12px;
+	width: min(100%, var(--hard-canvas-width));
+}
+
+.info-card {
+	background: var(--theme-panel-bg);
+	border: 2px solid var(--theme-panel-border);
+	border-radius: 12px;
+	padding: 10px;
+	box-shadow: 0 6px 14px rgba(14, 107, 168, 0.08);
+}
+
+.info-card h2 {
+	margin: 0 0 8px;
+	font-size: 1.1rem;
+	color: var(--theme-heading);
+}
+
+.info-card p {
+	margin: 0;
+	line-height: 1.45;
+}
+
+.info-card ul {
+	margin: 0;
+	padding-left: 18px;
+	line-height: 1.5;
+}
+
+.control-label {
+	font-weight: 700;
+	margin: 10px 0 8px;
+}
+
+.key-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 42px);
+	grid-template-rows: repeat(2, 42px);
+	gap: 6px;
+	justify-content: start;
+}
+
+.key {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: #ffffff;
+	border: 2px solid var(--theme-heading);
+	border-radius: 8px;
+	font-weight: 700;
+	color: var(--theme-key-text);
+	min-height: 42px;
+	min-width: 42px;
+	box-shadow: 0 2px 0 var(--theme-key-shadow);
+	user-select: none;
+}
+
+.key-up {
+	grid-column: 2;
+	grid-row: 1;
+}
+
+.key-left {
+	grid-column: 1;
+	grid-row: 2;
+}
+
+.key-down {
+	grid-column: 2;
+	grid-row: 2;
+}
+
+.key-right {
+	grid-column: 3;
+	grid-row: 2;
+}
+
+.space-row {
+	display: flex;
+	justify-content: flex-start;
+}
+
+.key-space {
+	padding: 0 24px;
+	font-size: 0.95rem;
+	letter-spacing: 0.03em;
+	text-transform: uppercase;
+}
+
+.charity-card {
+	border-color: var(--theme-accent);
+	background: linear-gradient(180deg, #fffbe8 0%, #ffffff 100%);
 }
 
 .top-bar {
 	width: 100%;
-	max-width: 420px;
-	margin-bottom: 12px;
+	max-width: none;
+	margin-bottom: 4px;
 }
 
 .top-bar h1 {
-	margin: 0 0 8px;
-	color: var(--cw-blue);
-	text-align: center;
+	margin: 0;
+	color: var(--theme-heading);
+	font-size: clamp(1.45rem, 2.6vw, 2rem);
+	letter-spacing: 0.02em;
 }
 
 .score-board {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	flex-wrap: nowrap;
+	width: 100%;
+	max-width: var(--hard-canvas-width);
+	margin: 0 auto;
 	gap: 8px;
 	background: white;
-	border: 2px solid var(--cw-blue);
+	border: 2px solid var(--theme-heading);
 	border-radius: 8px;
-	padding: 8px 12px;
-	font-size: 0.95rem;
+	padding: 6px 10px;
+	font-size: 0.78rem;
 }
 
 .pause-button {
-	padding: 6px 10px;
-	font-size: 0.85rem;
+	padding: 5px 8px;
+	font-size: 0.74rem;
 }
 
 .game-frame {
 	position: relative;
-	width: 360px;
+	width: var(--hard-canvas-width);
 	max-width: 100%;
 }
 
 #gameCanvas {
 	width: 100%;
 	height: auto;
-	border: 3px solid var(--cw-blue);
+	max-height: min(58vh, var(--hard-canvas-height));
+	border: 3px solid var(--theme-canvas-border);
 	border-radius: 10px;
 	display: block;
 	background: white;
@@ -94,7 +325,7 @@ body {
 	display: none;
 	align-items: center;
 	justify-content: center;
-	background: rgba(11, 90, 199, 0.45);
+	background: var(--theme-overlay);
 	padding: 16px;
 }
 
@@ -108,13 +339,13 @@ body {
 	background: white;
 	border-radius: 10px;
 	padding: 16px;
-	border: 2px solid var(--cw-yellow);
+	border: 2px solid var(--theme-accent);
 	text-align: center;
 }
 
 .overlay-card h2 {
 	margin-top: 0;
-	color: var(--cw-blue);
+	color: var(--theme-heading);
 }
 
 .overlay-card ul {
@@ -122,22 +353,124 @@ body {
 	padding-left: 18px;
 }
 
+.overlay-card select {
+	width: 100%;
+	margin: 6px 0 10px;
+	padding: 8px;
+	border: 2px solid var(--theme-panel-border);
+	border-radius: 8px;
+	font-weight: 700;
+	color: #17334a;
+	background: #ffffff;
+}
+
 button {
 	border: none;
 	border-radius: 8px;
 	padding: 10px 14px;
-	background: var(--cw-blue);
+	background: var(--theme-button);
 	color: white;
 	cursor: pointer;
 	font-weight: bold;
 }
 
 button:hover {
-	background: #0B5AC7;
+	background: var(--theme-button-hover);
 }
 
 .overlay-actions {
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
+}
+
+.action-popup {
+	position: absolute;
+	top: 0;
+	left: 0;
+	opacity: 0;
+	z-index: 5;
+	pointer-events: none;
+	font-family: "Proxima Nova", "Avenir Next", "Segoe UI", sans-serif;
+	font-size: 18px;
+	font-weight: 700;
+	line-height: 1.2;
+	color: #17334a;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.65);
+	white-space: normal;
+	word-break: break-word;
+	overflow-wrap: anywhere;
+	display: none;
+}
+
+.action-popup.show {
+	display: block;
+}
+
+@media (max-width: 430px) {
+	.game-page {
+		padding: 6px 8px;
+	}
+
+	.brand-banner {
+		gap: 8px;
+		padding: 6px 8px;
+	}
+
+	.brand-logo {
+		height: 24px;
+	}
+
+	.top-bar h1 {
+		font-size: 1.3rem;
+	}
+
+	.score-board {
+		flex-wrap: wrap;
+		justify-content: center;
+		font-size: 0.78rem;
+	}
+
+	.pause-button {
+		font-size: 0.76rem;
+	}
+
+	.charity-footer {
+		margin-bottom: 6px;
+		padding: 8px;
+	}
+
+	.charity-footer-links a {
+		width: 100%;
+		padding: 6px 10px;
+	}
+}
+
+@media (min-width: 1100px) {
+	.game-row {
+		display: grid;
+		grid-template-columns: minmax(250px, 290px) var(--hard-canvas-width) minmax(240px, 280px);
+		justify-content: center;
+		align-items: stretch;
+		gap: 18px;
+	}
+
+	.left-panel {
+		height: var(--hard-canvas-height);
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	}
+
+	.right-panel {
+		height: var(--hard-canvas-height);
+		width: 100%;
+		display: flex;
+		align-items: center;
+	}
+
+	.right-panel .charity-card {
+		width: 100%;
+	}
 }
