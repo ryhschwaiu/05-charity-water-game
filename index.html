@@ -7,18 +7,23 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div class="brand-banner" aria-label="FreeFlow and charity water branding">
+        <img src="img/cw_logo_horizontal.png" alt="charity: water" class="brand-logo">
+        <h1>FreeFlow</h1>
+    </div>
+
     <main class="game-page">
         <div class="page-layout">
             <header class="top-bar">
-                <div class="brand-banner" aria-label="FreeFlow and charity water branding">
-                    <img src="img/cw_logo_horizontal.png" alt="charity: water" class="brand-logo">
-                    <h1>FreeFlow</h1>
+                <div class="top-actions" aria-label="Game action buttons">
+                    <button id="pauseButton" type="button" class="pause-button">Pause</button>
+                    <button id="helpButton" type="button" class="utility-button mobile-only-action">Help</button>
+                    <button id="infoButton" type="button" class="utility-button mobile-only-action">Info</button>
                 </div>
                 <div class="score-board">
                     <span>Liters Delivered: <strong id="scoreValue">0</strong></span>
                     <span>High Score: <strong id="highScoreValue">0</strong></span>
                     <span>Jerry Cans: <strong id="jerryCansValue">0</strong></span>
-                    <button id="pauseButton" type="button" class="pause-button">Pause</button>
                 </div>
             </header>
 
@@ -84,6 +89,40 @@
                             </div>
                         </div>
                     </div>
+
+                    <div id="helpOverlay" class="overlay">
+                        <div class="overlay-card mobile-panel-card">
+                            <h2>Controls and How to Play</h2>
+                            <p><strong>Move:</strong> Arrow keys or swipe.</p>
+                            <p><strong>Interact:</strong> Space or tap.</p>
+                            <ul>
+                                <li>Stay ahead of the flowing water</li>
+                                <li>Clear contaminants, open hatches, and avoid pests.</li>
+                                <li>Collect Jerry cans and distribute them to Depots for bonus score</li>
+                                <li>Deliver as much water as you can!</li>
+                            </ul>
+                            <button id="closeHelpButton" type="button">Close</button>
+                        </div>
+                    </div>
+
+                    <div id="infoOverlay" class="overlay">
+                        <div class="overlay-card mobile-panel-card">
+                            <h2>Charity Info</h2>
+                            <p>
+                                This game is inspired by the global clean water mission of charity: water.
+                                Every point represents water delivered where it is needed most.
+                            </p>
+                            <section class="subbrand-card mobile-subbrand-card" aria-label="Difficulty subbrand information">
+                                <h3 id="mobileSubbrandTitle">The Pool</h3>
+                                <p id="mobileSubbrandDescription">
+                                    The Pool is a first-of-its-kind giving program
+                                    that supporters our operations and rewards
+                                    our employees through illiquid donations.
+                                </p>
+                            </section>
+                            <button id="closeInfoButton" type="button">Close</button>
+                        </div>
+                    </div>
                 </section>
 
                 <aside class="right-panel" aria-label="Charity information">
@@ -92,6 +131,15 @@
                         <p>
                             This game is inspired by the global clean water mission of charity: water.
                             Every point represents water delivered where it is needed most.
+                        </p>
+                    </section>
+
+                    <section class="info-card subbrand-card" aria-label="Difficulty subbrand information">
+                        <h2 id="desktopSubbrandTitle">The Pool</h2>
+                        <p id="desktopSubbrandDescription">
+                            The Pool is a first-of-its-kind giving program
+                            that supporters our operations and rewards
+                            our employees through illiquid donations.
                         </p>
                     </section>
                 </aside>

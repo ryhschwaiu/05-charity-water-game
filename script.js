@@ -14,9 +14,15 @@ const startButton = document.getElementById('startButton');
 const restartButton = document.getElementById('restartButton');
 const mainMenuButton = document.getElementById('mainMenuButton');
 const pauseButton = document.getElementById('pauseButton');
+const helpButton = document.getElementById('helpButton');
+const infoButton = document.getElementById('infoButton');
 const continueButton = document.getElementById('continueButton');
 const pauseRestartButton = document.getElementById('pauseRestartButton');
 const quitButton = document.getElementById('quitButton');
+const helpOverlay = document.getElementById('helpOverlay');
+const infoOverlay = document.getElementById('infoOverlay');
+const closeHelpButton = document.getElementById('closeHelpButton');
+const closeInfoButton = document.getElementById('closeInfoButton');
 
 // Score Elements & Game Over Message
 const scoreValue = document.getElementById('scoreValue');
@@ -32,6 +38,46 @@ const DIFFICULTY_LABELS = {
     hard: 'The Well – Hard',
     test: 'Test Mode'
 };
+
+const SUBBRAND_INFO = {
+    easy: {
+        title: 'The Spring',
+        description: 'The Spring is a passionate and determined community of monthly givers from around the world.'
+    },
+    normal: {
+        title: 'The Pool',
+        description: 'The Pool is a first-of-its-kind giving program that supporters our operations and rewards our employees through illiquid donations.'
+    },
+    hard: {
+        title: 'The Well',
+        description: 'The Well is a generous group of families who support our Operations and make our 100% Model possible.'
+    }
+};
+
+const desktopSubbrandTitle = document.getElementById('desktopSubbrandTitle');
+const desktopSubbrandDescription = document.getElementById('desktopSubbrandDescription');
+const mobileSubbrandTitle = document.getElementById('mobileSubbrandTitle');
+const mobileSubbrandDescription = document.getElementById('mobileSubbrandDescription');
+
+function updateSubbrandInfo(difficultyLevel) {
+    const subbrand = SUBBRAND_INFO[difficultyLevel] || SUBBRAND_INFO.normal;
+    if (!subbrand) {
+        return;
+    }
+
+    if (desktopSubbrandTitle) {
+        desktopSubbrandTitle.textContent = subbrand.title;
+    }
+    if (desktopSubbrandDescription) {
+        desktopSubbrandDescription.textContent = subbrand.description;
+    }
+    if (mobileSubbrandTitle) {
+        mobileSubbrandTitle.textContent = subbrand.title;
+    }
+    if (mobileSubbrandDescription) {
+        mobileSubbrandDescription.textContent = subbrand.description;
+    }
+}
 
 // Optional difficulty DOM (created if missing)
 let difficultySelect = document.getElementById('difficultySelect');
@@ -293,6 +339,7 @@ let generationCount = 0;
 let selectedDifficulty = 'normal';
 let gridCols = DEFAULT_GRID_COLS;
 let tileSize = FIXED_CANVAS_WIDTH / DEFAULT_GRID_COLS;
+let resumeAfterMobilePanel = false;
 
 const colors = {
     pipe: '#8BD1CB',
@@ -307,6 +354,60 @@ const colors = {
     brandAccent: '#1aa6b7',
     gridLine: '#d4e8f2'
 };
+
+// Sound effects are loaded once and cloned on play so quick repeat sounds are reliable.
+const SOUND_FILES = {
+    start: 'sounds/start.mp3',
+    end: 'sounds/end.mp3',
+    grab: 'sounds/grab.mp3',
+    give: 'sounds/give.mp3',
+    splat: 'sounds/splat.mp3',
+    hatch: 'sounds/hatch.mp3',
+    step1: 'sounds/step1.mp3',
+    step2: 'sounds/step2.mp3'
+};
+
+const sounds = {};
+
+function initializeSounds() {
+    const soundKeys = Object.keys(SOUND_FILES);
+    for (let i = 0; i < soundKeys.length; i += 1) {
+        const soundKey = soundKeys[i];
+        const audio = new Audio(SOUND_FILES[soundKey]);
+        audio.preload = 'auto';
+        sounds[soundKey] = audio;
+    }
+}
+
+function playSound(soundKey, options = {}) {
+    const source = sounds[soundKey];
+    if (!source) {
+        return;
+    }
+
+    const playbackRate = options.playbackRate || 1;
+    const volume = options.volume ?? 1;
+
+    const audio = source.cloneNode();
+    audio.playbackRate = playbackRate;
+    audio.volume = volume;
+
+    const playPromise = audio.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => {
+            // Ignore autoplay/interrupt errors so gameplay is never blocked.
+        });
+    }
+}
+
+function playRandomStepSound() {
+    const stepKey = Math.random() < 0.5 ? 'step1' : 'step2';
+    const pitchJitter = (Math.random() - 0.5) * 0.16;
+    playSound(stepKey, {
+        playbackRate: 1 + pitchJitter,
+        volume: 0.45
+    });
+}
 
 function hexToRgba(hexColor, alpha) {
     const safeHex = (hexColor || '').replace('#', '');
@@ -355,8 +456,11 @@ function applyDifficultyTheme(difficultyLevel) {
 
 if (difficultySelect) {
     applyDifficultyTheme(difficultySelect.value || selectedDifficulty);
+    updateSubbrandInfo(difficultySelect.value || selectedDifficulty);
     difficultySelect.addEventListener('change', () => {
-        applyDifficultyTheme(difficultySelect.value || 'normal');
+        const activeDifficulty = difficultySelect.value || 'normal';
+        applyDifficultyTheme(activeDifficulty);
+        updateSubbrandInfo(activeDifficulty);
     });
 }
 
@@ -906,6 +1010,10 @@ function isValidMove(fromRow, fromCol, targetRow, targetCol) {
 
 function applyMoveResult(previousRow, previousCol) {
     const currentTile = getTileAtWorld(player.row, player.col);
+    const enteredTileWithReserves = jerryCanReserves > 0;
+
+    playRandomStepSound();
+
     if (currentTile && currentTile.hazard === 'pest') {
         endGame('A pest got you.');
         return;
@@ -922,15 +1030,25 @@ function applyMoveResult(previousRow, previousCol) {
             jerryCansValue.textContent = `${jerryCansTotal}`;
             localStorage.setItem('freeFlowJerryCans', `${jerryCansTotal}`);
             showActionPopup('pickup');
+            const grabPitchJitter = (Math.random() - 0.5) * 0.2;
+            playSound('grab', {
+                playbackRate: 1 + grabPitchJitter
+            });
         }
     }
 
-    // Deliver jerry can on distribution tile
-    if (currentTile && currentTile.special === 'distribution' && jerryCanReserves > 0) {
+    // Deliver jerry can when entering a distribution tile while already carrying reserves.
+    if (
+        currentTile
+        && currentTile.special === 'distribution'
+        && enteredTileWithReserves
+        && jerryCanReserves > 0
+    ) {
         deliveryScore += jerryCanReserves * JERRY_CAN_DELIVERY_POINTS;
         jerryCanReserves = 0;
         updateScoreDisplay();
         showActionPopup('distribution');
+        playSound('give');
     }
 
     // Depth score should only increase after a successful move to a new furthest row.
@@ -1021,6 +1139,7 @@ function interactWithCurrentTile() {
         tile.state = 'open';
         tile.openSide = null;
         showActionPopup('opened');
+        playSound('hatch');
         return;
     }
 
@@ -1028,6 +1147,7 @@ function interactWithCurrentTile() {
         tile.hazard = null;
         tile.state = null;
         showActionPopup('cleared');
+        playSound('splat');
     }
 }
 
@@ -1225,6 +1345,7 @@ function endGame(reason) {
     gameState = 'game-over';
     clearActionPopup();
     cancelAnimationFrame(animationId);
+    playSound('end');
 
     updateScoreDisplay();
     finalScoreValue.textContent = `${score}`;
@@ -1259,10 +1380,65 @@ function endGame(reason) {
     }
 
     pauseOverlay.classList.remove('show');
+    if (helpOverlay) {
+        helpOverlay.classList.remove('show');
+    }
+    if (infoOverlay) {
+        infoOverlay.classList.remove('show');
+    }
     gameOverOverlay.classList.add('show');
 }
 
+function hideMobilePanels() {
+    if (helpOverlay) {
+        helpOverlay.classList.remove('show');
+    }
+    if (infoOverlay) {
+        infoOverlay.classList.remove('show');
+    }
+}
+
+function openMobilePanel(panelType) {
+    if (!helpOverlay || !infoOverlay) {
+        return;
+    }
+
+    hideMobilePanels();
+
+    const targetOverlay = panelType === 'help' ? helpOverlay : infoOverlay;
+    if (!targetOverlay) {
+        return;
+    }
+
+    resumeAfterMobilePanel = false;
+    if (gameState === 'playing') {
+        pauseGame();
+        pauseOverlay.classList.remove('show');
+        resumeAfterMobilePanel = true;
+    }
+
+    targetOverlay.classList.add('show');
+}
+
+function closeMobilePanels() {
+    const hadOpenPanel =
+        (helpOverlay && helpOverlay.classList.contains('show')) ||
+        (infoOverlay && infoOverlay.classList.contains('show'));
+
+    hideMobilePanels();
+
+    if (hadOpenPanel && resumeAfterMobilePanel && gameState === 'paused') {
+        resumeAfterMobilePanel = false;
+        continueGame();
+        return;
+    }
+
+    resumeAfterMobilePanel = false;
+}
+
 function pauseGame() {
+    closeMobilePanels();
+
     if (gameState !== 'playing') {
         return;
     }
@@ -1272,6 +1448,9 @@ function pauseGame() {
 }
 
 function continueGame() {
+    hideMobilePanels();
+    resumeAfterMobilePanel = false;
+
     if (gameState !== 'paused') {
         return;
     }
@@ -1285,6 +1464,7 @@ function restartFromPause() {
     if (gameState !== 'paused') {
         return;
     }
+    closeMobilePanels();
     pauseOverlay.classList.remove('show');
     startGame();
 }
@@ -1293,6 +1473,7 @@ function quitToMainMenu() {
     if (gameState !== 'paused') {
         return;
     }
+    closeMobilePanels();
     gameState = 'start';
     cancelAnimationFrame(animationId);
     setupNewGame();
@@ -1306,6 +1487,7 @@ function gameOverToMainMenu() {
     if (gameState !== 'game-over') {
         return;
     }
+    closeMobilePanels();
     gameState = 'start';
     cancelAnimationFrame(animationId);
     setupNewGame();
@@ -1383,11 +1565,14 @@ function gameLoop(timestamp) {
 }
 
 function startGame() {
+    closeMobilePanels();
+
     if (difficultySelect) {
         selectedDifficulty = difficultySelect.value || 'normal';
     }
 
     applyDifficultyTheme(selectedDifficulty);
+    updateSubbrandInfo(selectedDifficulty);
 
     const setting = getDifficultySetting();
     gridCols = setting.gridCols || DEFAULT_GRID_COLS;
@@ -1401,6 +1586,7 @@ function startGame() {
     startOverlay.classList.remove('show');
     gameOverOverlay.classList.remove('show');
     pauseOverlay.classList.remove('show');
+    playSound('start');
     animationId = requestAnimationFrame(gameLoop);
 }
 
@@ -1461,11 +1647,30 @@ startButton.addEventListener('click', startGame);
 restartButton.addEventListener('click', startGame);
 mainMenuButton.addEventListener('click', gameOverToMainMenu);
 pauseButton.addEventListener('click', pauseGame);
+if (helpButton) {
+    helpButton.addEventListener('click', () => {
+        openMobilePanel('help');
+    });
+}
+if (infoButton) {
+    infoButton.addEventListener('click', () => {
+        openMobilePanel('info');
+    });
+}
+if (closeHelpButton) {
+    closeHelpButton.addEventListener('click', closeMobilePanels);
+}
+if (closeInfoButton) {
+    closeInfoButton.addEventListener('click', closeMobilePanels);
+}
 continueButton.addEventListener('click', continueGame);
 pauseRestartButton.addEventListener('click', restartFromPause);
 quitButton.addEventListener('click', quitToMainMenu);
 window.addEventListener('keydown', handleInput);
 canvas.addEventListener('touchstart', handleTouchStart, false);
 canvas.addEventListener('touchend', handleTouchEnd, false);
+
+initializeSounds();
+updateSubbrandInfo(selectedDifficulty);
 
 drawGame();
