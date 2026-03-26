@@ -42,20 +42,24 @@ const DIFFICULTY_LABELS = {
 const SUBBRAND_INFO = {
     easy: {
         title: 'The Spring',
-        description: 'The Spring is a passionate and determined community of monthly givers from around the world.'
+        description: 'The Spring is a passionate and determined community of monthly givers from around the world.',
+        logo: 'img/spring_logo.png'
     },
     normal: {
         title: 'The Pool',
-        description: 'The Pool is a first-of-its-kind giving program that supporters our operations and rewards our employees through illiquid donations.'
+        description: 'The Pool is a first-of-its-kind giving program that supporters our operations and rewards our employees through illiquid donations.',
+        logo: 'img/pool_logo.png'
     },
     hard: {
         title: 'The Well',
-        description: 'The Well is a generous group of families who support our Operations and make our 100% Model possible.'
+        description: 'The Well is a generous group of families who support our Operations and make our 100% Model possible.',
+        logo: 'img/well_logo.png'
     }
 };
 
 const desktopSubbrandTitle = document.getElementById('desktopSubbrandTitle');
 const desktopSubbrandDescription = document.getElementById('desktopSubbrandDescription');
+const desktopSubbrandLogo = document.getElementById('desktopSubbrandLogo');
 const mobileSubbrandTitle = document.getElementById('mobileSubbrandTitle');
 const mobileSubbrandDescription = document.getElementById('mobileSubbrandDescription');
 
@@ -70,6 +74,10 @@ function updateSubbrandInfo(difficultyLevel) {
     }
     if (desktopSubbrandDescription) {
         desktopSubbrandDescription.textContent = subbrand.description;
+    }
+    if (desktopSubbrandLogo) {
+        desktopSubbrandLogo.src = subbrand.logo || 'img/pool_logo.png';
+        desktopSubbrandLogo.alt = `${subbrand.title} logo`;
     }
     if (mobileSubbrandTitle) {
         mobileSubbrandTitle.textContent = subbrand.title;
